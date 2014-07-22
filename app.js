@@ -4,6 +4,17 @@ var favicon = require('static-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongo = require('mongodb');
+var monk = require('monk');
+var methodOverride = require('method-override');
+var expressSession = require('express-session');
+
+/* Variablen Datenbank und Routing
+ * Verbindnen mit mongolab DB, falls nicht möglich lokalen fallback benutzen
+ */
+
+var dbConnectString = ' mongodb://testUser:testU@ds037827.mongolab.com:37827/maedn' || 'localhost:27017/Maedn';
+var db = monk(dbConnectString);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -12,14 +23,23 @@ var app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
+app.engine('.html', require('ejs').__express);
+app.set('view engine', 'html');
 
+app.use(methodOverride());
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(expressSession({secret:'MaednProjectSecretPassPhrase'}));
+
+app.use(function(req,res,next){
+    req.db = db;
+    next();
+});
 
 app.use('/', routes);
 app.use('/users', users);
