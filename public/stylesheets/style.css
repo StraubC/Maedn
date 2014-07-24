@@ -6,10 +6,18 @@ body {
 	
 }
 
+
 /***** Layout *****/
-.center {clear: both; margin: 0 auto; width: 810px;}
+body.center {clear: both; margin: 0 auto; width: 810px;}
 
+#canvasDiv {
+	width: 100%;
+	text-align: center;
+} 
 
+canvas{
+	display: inline;
+}
 /*
  * section content
  */
