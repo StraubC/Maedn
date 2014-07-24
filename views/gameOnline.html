@@ -1,0 +1,40 @@
+<% include header %>
+	<script src="/javascripts/gameOnline.js"> </script>
+
+	<div class="buttonBig" id="createOnline">Spiel erstellen</div><div class="buttonBig" id="joinOnline">Spiel beitreten</div>
+
+	<div id="createBox">
+		<h2>Online Spiel erstellen</h2>
+		<p>Neues Spiel erstellen. Teilen Sie den Mitspielern den Namen und das Passwort des Spiels mit.</p>
+		<form action="/games/gameOnlineSetup" method="post">
+			<p>
+				<label>Name des Spiels</label>
+				<input type="text" name="gameName"/>
+			</p>
+			<p>
+				<label>Passwort </label>
+				<input type="password" name="gamePw"/>
+			</p>
+			<p>
+				<input type="submit" value="Erstellen"/>
+			</p>
+		</form>
+	</div>
+	<div id="joinBox" style="display:none;">
+		<h2>Online Spiel beitreten</h2>
+		<p>Um an einem Spiel teilzunehmen geben Sie den Namen und das Passwort des Spiels ein.</p>
+		<form action="/games/gameOnlineJoin" method="post">
+			<p>
+				<label>Name der Session</label>
+				<input type="text" name="gameName"/>
+			</p>
+			<p>
+				<label>Passwort </label>
+				<input type="password" name="gamePw"/>
+			</p>
+			<p>
+				<input type="submit" value="beitreten"/>
+			</p>
+		</form>	
+	</div>
+<% include footer %>

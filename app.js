@@ -13,11 +13,12 @@ var expressSession = require('express-session');
  * Verbindnen mit mongolab DB, falls nicht möglich lokalen fallback benutzen
  */
 
-var dbConnectString = ' mongodb://testUser:testU@ds037827.mongolab.com:37827/maedn' || 'localhost:27017/Maedn';
+var dbConnectString = 'mongodb://testUser:testU@ds037827.mongolab.com:37827/maedn' || 'localhost:27017/Maedn';
 var db = monk(dbConnectString);
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var games = require('./routes/games');
 
 var app = express();
 
@@ -43,6 +44,7 @@ app.use(function(req,res,next){
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/games', games);
 
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {

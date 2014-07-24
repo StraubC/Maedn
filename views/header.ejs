@@ -11,18 +11,11 @@
 			<h1>Mensch ärger dich nicht</h1>
 			<nav> 
 				<ul>
-					<li><a href="/">Home</a></li>
-					
+					<li <% if(title == "Home") {%> class="active" <%}%> ><a href="/">Home</a></li>
+					<li <% if(title == "Online Game") {%> class="active" <%}%> ><a href="/gameOnline">Online Spiel</a></li>
+					<li <% if(title == "Party Game") {%> class="active" <%}%> ><a href="/gameParty">Party Spiel</a></li>
 				</ul>
 			</nav>
 			
 		</header>
 		<section id="content">
-			<h2> <%=message %></h2>
-			
-			<p><%=error.status %></p>
-			<p><%=error.stack %></p>
-		</section>
-
-	</body>
-</html>
