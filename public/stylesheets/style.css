@@ -17,6 +17,7 @@ body.center {clear: both; margin: 0 auto; width: 810px;}
 
 canvas{
 	display: inline;
+	background:url(../images/spielfeld.jpg);
 }
 /*
  * section content
