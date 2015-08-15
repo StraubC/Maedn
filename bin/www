@@ -1,9 +1,29 @@
 #!/usr/bin/env node
 var debug = require('debug')('Maedn');
 var app = require('../app');
+//var socketio = require('socket.io');
 
 app.set('port', process.env.PORT || 3000);
 
+
 var server = app.listen(app.get('port'), function() {
   debug('Express server listening on port ' + server.address().port);
+});
+
+var io = require('socket.io').listen(server);
+
+io.sockets.on('connection', function(socket) {
+    socket.on('dice', function (n) {
+        console.log('gewuerfelt: ' + n);
+        io.sockets.emit('dice', n);
+    });
+
+    socket.on('activateDice', function (n) {
+        console.log('aktiviere Wuerfel für Spieler ' + n);
+        io.sockets.emit('activateDice', n);
+    });
+
+    socket.on('updateMove', function (n){
+    	io.sockets.emit('updateMove', n);
+    });
 });

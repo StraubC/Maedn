@@ -35,6 +35,12 @@ canvas{
 
 #content form {clear: both; margin: 10 auto; text-align: center;}
 
+#diceBox {
+	position: relative;
+    left: 45%;
+    margin: auto;
+} 
+
 
 #login {
 	background-color: #c0c0a7;

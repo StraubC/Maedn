@@ -17,7 +17,8 @@
     "monk": "*",
     "method-override": "*",
     "express-session": "*",
-    "ejs": "*"
+    "ejs": "*",
+    "socket.io": "latest"
 
   },
   "main": "app-js"
