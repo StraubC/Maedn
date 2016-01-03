@@ -78,13 +78,10 @@ router.post('/gameOnlineSetup', function(req, res){
   		else {
 		    if(gamePw.toString() === doc.pw){
 		      // return: Login bestätigt, Weiterleitung auf sessionClient Seite
-		      //res.render("gameOnlineClient", { title: 'Online Spiel Client', name: gameName});
 		      res.redirect("gameOnlineClient");
 		    }
 		    else{
-		      // ToDo: Fehlermeldung falsches Passwort
-		      //return: Falsche Login Informationen, Weiterleitung zurück auf joinSession Seite
-		      //res.redirect("gameOnlineJoin");
+		      
 		      res.send("Falsches Passwort.");
 		    }
 		}
@@ -142,7 +139,6 @@ router.post('/gamePartySetup', function(req, res){
 		      res.redirect("gamePartyClient");
 		    }
 		    else{
-		      // ToDo: Fehlermeldung falsches Passwort
 		      //return: Falsche Login Informationen, Weiterleitung zurück auf joinSession Seite
 		      //res.redirect("gameOnlineJoin");
 		      res.send("Falsches Passwort.");
@@ -164,17 +160,6 @@ router.post('/gameState', function(req, res){
         );
     });
 });
-
-/*router.post('/gameStateUpdate', function(req, res){
-  	var db = req.db;
-  	var collection = db.get('gameStateCollection');
-  
-  	collection.insert(req.body, function(err, result){
-        res.send(
-            (err === null) ? { msg: '' } : { msg: err }
-        );
-    });
-});*/
 
 /*
  * GET gameState abfragen
@@ -212,7 +197,6 @@ router.delete('/:id', function(req, res){
  */
 
 router.post('/gameStateUpdate', function(req, res){
-  //console.log("In /data/update");
   var db = req.db;
   var collection = db.get('gameStateCollection');
   //var id = req.params.id.replace(/:/g,"").replace(/\s/g,"");
@@ -220,13 +204,6 @@ router.post('/gameStateUpdate', function(req, res){
   var newMove = req.body.updateMove;
   var newDice = req.body.updateDice;
   var newActive = req.body.updateActive;
-  //console.log(uId);
-  /*collection.update(
-  	{ id: uID},
-  	{ $push: { 
-  	 	lastMoveToken: newMove
-  	 	}
-  	});*/
   collection.findAndModify({id: uId}, {$push:{
         lastMoveToken:  newMove,
         lastDice: newDice,

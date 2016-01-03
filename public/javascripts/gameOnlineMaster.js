@@ -156,6 +156,7 @@ $(document).ready(function(){
 	var activePlayer = 0;
 	var activeToken = 'A';
 	var wurf;
+	var anzTrys = 0;
 
 	function coordinate(x,y,dx,dy){
 		this.x = x;
@@ -212,8 +213,8 @@ $(document).ready(function(){
 		gameState.turn = 1;
 		gameState.playersTotal = 2;
 		gameState.playersIn = 2;
-		gameState.grid[0] = 0;
-		gameState.grid[10] = 1;
+		//gameState.grid[0] = 0;
+		//gameState.grid[10] = 1;
 		gameState.gridHome[0] = -1;
 		gameState.gridHome[4] = -1;
 		
@@ -224,12 +225,8 @@ $(document).ready(function(){
             url: '/games/gameState',
             dataType: 'JSON'
         }).done(function( response ) {
-            // Check for successful (blank) response
             if (response.msg != ''){
-
-                // If something goes wrong, alert the error message that our service returned
-                alert('Error: ' + response.msg);
-
+				alert('Error: ' + response.msg);
             }
         });
 
@@ -259,51 +256,39 @@ $(document).ready(function(){
 	    ctx.closePath();
 	    ctx.fillStyle=grd2;
 	    ctx.fill();
-
 	}
 
 	function moveTokenTo(){
 		var endLoop = false;
 		
-		tmpPos += 1;
-		if (tmpPos == 40){
-			/*gameState.gridFinish[activePlayer]++;
-			coordNew = posFinish[1+(activePlayer*4)];
-			endLoop = true;*/
-			tmpPos=0;
-			coordNew = posAbs[tmpPos];
+		if(tmpPos != -1){
+			tmpPos += 1;
+			if (tmpPos == 40){
+				tmpPos=0;
+				coordNew = posAbs[tmpPos];
+			}
+			else {
+				coordNew = posAbs[tmpPos];
+			}
+
+			if (tmpPos == (posOld + gameState.lastDice[gameState.turn]) % 40){
+				endLoop = true;
+			}
+			if(tmpPos==0){
+				coordOld = posAbs[39];
+			}
+			else{
+				coordOld = posAbs[tmpPos-1];
+			}
+
+			moveInProgress=true;
+			interval = setInterval(draw, 10);
 		}
 		else {
-			coordNew = posAbs[tmpPos];
+			
 		}
 
-		if (tmpPos == (posOld + gameState.lastDice[gameState.turn]) % 40){
-			endLoop = true;
-		}
-		if(tmpPos==0){
-			coordOld = posAbs[39];
-		}
-		else{
-			coordOld = posAbs[tmpPos-1];
-		}
-
-		/*var pos = tmpPos;
-		if(pos == 0){
-			coordOld = posAbs[39];
-		}
-		else{
-			coordOld = posAbs[pos-1];
-		}
-		coordNew = posAbs[pos]; */
-		
-		// while(!(coordOld.x == coordNew.x && coordOld.y == coordNew.y)){
-		// 	setTimeout(draw(),100);
-		// }
-		moveInProgress=true;
-		interval = setInterval(draw, 10);
-
-
-		$(".testFeld").append(coordOld.toString());
+		//$(".testFeld").append(coordOld.toString());
 
 		if(endLoop){
 			gameState.grid[posOld] =-1;
@@ -329,38 +314,7 @@ $(document).ready(function(){
 	function draw() {
 		clear();
 		// Anzeigen der inaktiven Figuren
-		/*for (var i=0; i < 4;i++){
-			if(i != activePlayer){
-				var coord = new coordinate();
-				var tmpPosInact = allTokens[i]["posA"];
-				//$(".testFeld").append(tmpPos);
-				if( tmpPosInact < 0){
-					coord = posHome[i*4+1];
-				}
-				else if (tmpPosInact >100){
-					coord = posFinish[i*4+1];
-				}
-				else{
-					coord = posAbs[tmpPosInact];
-				}
-				//$(".testFeld").append(coord.toString());
-				drawToken(coord.x, coord.y,allTokens[i]["farbe"]);
-
-				tmpPosInact = allTokens[i]["posB"];
-				if( tmpPosInact < 0){
-					coord = posHome[i*4+1];
-				}
-				else if (tmpPosInact >100){
-					coord = posFinish[i*4+1];
-				}
-				else{
-					coord = posAbs[tmpPosInact];
-				}
-				//$(".testFeld").append(coord.toString());
-				drawToken(coord.x, coord.y,allTokens[i]["farbe"]);
-			}
-		}*/
-
+		
 		var tmpCoord = new coordinate();
 		var tmpColor;
 		for (var i=0; i<40; i++){
@@ -431,12 +385,9 @@ $(document).ready(function(){
 				break;
 
 		}
-		//var color = allTokens[activePlayer]["farbe"];
-		//$(".testFeld").append(color);
-		//drawToken(coordOld.x, coordOld.y, color);
+		
 		coordOld.x += coordNew.dx;
 		coordOld.y += coordNew.dy;
-		//$(".testFeld").append(coordOld.toString());
 		if(coordOld.x == coordNew.x && coordOld.y == coordNew.y){
 			moveInProgress = false;
 			
@@ -454,23 +405,94 @@ $(document).ready(function(){
 
 	$("#wuerfel").click(function(){
 		activePlayer = 0;
+		var possMoves = [];
+		var anzMoves = 0;
 		$("#wuerfel").attr("disabled", true);
-		/*posOld = allTokens[activePlayer]["posA"];
-		tmpPos = posOld;
+		wurf = Math.floor(Math.random() * 6) + 1;
 
-		wurf = Math.floor(Math.random() * 5) + 1;
-		allTokens[activePlayer]["posA"] = (posOld + wurf) % 40;*/
 		
 		for(var i=0; i<=39; i++){
 			if (gameState.grid[i] == activePlayer){
-				gameState.lastMoveToken[gameState.turn] = i;	
+				possMoves.push(i);
+				/*gameState.lastMoveToken[gameState.turn] = i;	
 				posOld = i;
-				tmpPos = posOld;
+				tmpPos = posOld;*/
 			}
 		}
+		if(possMoves.length == 0){
+			possMoves.push(-1);
+			anzTrys++;
+			$("#wuerfel").attr("disabled", false);
+			if(wurf == 6){
+				gameState.lastMoveToken[gameState.turn] = -1;	
+				posOld = -1;
+				tmpPos = posOld;
+
+				gameState.lastDice[gameState.turn] = wurf;
+
+				var newMove = {
+					'updateId': gameState.id,
+					'updateMove': gameState.lastMoveToken[gameState.turn],
+					'updateDice': gameState.lastDice[gameState.turn],
+					'updateActive': activePlayer
+				};
+				$.ajax({   
+					url: '/games/gameStateUpdate',
+					type: 'POST',
+					data: newMove,
+					dataType: 'JSON'
+				}); 
+				
+				intervalDraw = setInterval(moveTokenTo,600);
+			}
+		}
+
+		else{
+			anzMoves = possMoves.length;
+
+			switch (anzMoves){
+				case 4:
+					$("#choose4Box").show(500);
+				case 3:
+					$("#choose3Box").show(500);
+				case 2: 
+					$("#choose2Box").show(500);
+				case 1:
+					$("#choose1Box").show(500);
+					break;
+			}
+		}
+
+
+		$(".testFeld").append("<li>" + wurf + "</li>");
+			
+	});
+
+	$("#choose1").click(function(){
+		var possMoves = [];
+		var anzMoves = 0;
 		
-		
-		gameState.lastDice[gameState.turn] = Math.floor(Math.random() * 6) + 1;
+
+		for(var i=0; i<=39; i++){
+			if (gameState.grid[i] == activePlayer){
+				possMoves.push(i);
+				
+			}
+		}
+		if(possMoves.length == 0){
+			possMoves.push(-1);
+		}
+		if(possMoves[0] == -1){
+			//keine aktiven Figuren
+		}
+
+		else{
+			gameState.lastMoveToken[gameState.turn] = possMoves[0];	
+			posOld = possMoves[0];
+			tmpPos = posOld;
+		}
+		$(".testFeld").append("<li> 1 gewählt " + possMoves[0] + "</li>");
+		gameState.lastDice[gameState.turn] = wurf;
 
 		var newMove = {
 			'updateId': gameState.id,
@@ -486,26 +508,19 @@ $(document).ready(function(){
 		}); 
 		
 		intervalDraw = setInterval(moveTokenTo,600);
-		
-		// for(i=0;i<wurf-1;i++){
-		// 	//testPosA+=1;
-		// 	//testPosA%=40;
-		// 	clear();
-		// 	moveTokenTo(testPosA);
 
-		// }
-		
+	});
 
-		// testPosA+=1;
-		// testPosA%=40;
-		// clear();
-		// moveTokenTo(testPosA);
+	$("#choose2").click(function(){
+		$(".testFeld").append("<li> 2 gewählt</li>");
+	});
 
-		$(".testFeld").append("<li>" + gameState.lastDice[gameState.turn] + "</li>");
-		//$(".testFeld").append("")
+	$("#choose3").click(function(){
+		$(".testFeld").append("<li> 3 gewählt</li>");
+	});
 
-		
-		
+	$("#choose4").click(function(){
+		$(".testFeld").append("<li> 4 gewählt</li>");
 	});
 	
 	$("#wuerfel2").click(function(){
